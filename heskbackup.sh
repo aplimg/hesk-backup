@@ -8,8 +8,8 @@
 
 DOW=$(date +%a)
 NOW=$(date +%d%b%Y)
-DEST="/var/bak/hesk/$DOW"
-#echo $DEST
+DEST="/var/bak/hesk.bak/$DOW"
+echo $DEST
 
 mkdir -p $DEST
 rm -rf $DEST/*
@@ -18,4 +18,11 @@ mysqldump --opt hesk | gzip > $DEST/$NOW-heskdb.sql.gz
 
 tar czf $DEST/$NOW-heskfiles.tgz /var/www/hesk/*
 
+# Push a copy to the NAS
+USR=admin
+RMT=10.10.10.250
+ssh $USR@$RMT mkdir -p hesk.bak/$DOW
+ssh $USR@$RMT rm -rf hesk.bak/$DOW/*
+scp $DEST/* $USR@$RMT:hesk.bak/$DOW/
 
+# end
